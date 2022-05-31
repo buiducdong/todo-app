@@ -22,7 +22,7 @@ const filterTodos = (todos = [], status = '', id = '') => {
 };
 class App extends PureComponent {
   state = {
-    listTodos: [], //JSON.parse(localStorage.getItem('TODOS'))
+    listTodos: JSON.parse(localStorage.getItem('TODOS')) || [], //JSON.parse(localStorage.getItem('TODOS'))
     todoEditingId: '',
     isCheckedAll: false,
     status: 'ALL',
@@ -42,7 +42,7 @@ class App extends PureComponent {
     this.setState((preState) => ({
       listTodos: [...preState.listTodos, todo],
     }));
-    //localStorage.setItem('TODOS', JSON.stringify([...this.state.listTodos, todo]));
+    localStorage.setItem('TODOS', JSON.stringify([...this.state.listTodos, todo]));
   };
 
   getTodoEditingId = (id = '') => {
@@ -64,6 +64,7 @@ class App extends PureComponent {
       todo.id === id ? { ...todo, isCompleted: !todo.isCompleted } : todo
     );
     this.setState({ listTodos: updateList, isCheckedAll: !isNotCheckedAll(updateList) });
+    localStorage.setItem('TODOS', JSON.stringify([...updateList]));
   };
 
   setStatusFilter = (status = '') => {
@@ -72,12 +73,16 @@ class App extends PureComponent {
 
   clearCompleted = () => {
     const { listTodos } = this.state;
+    const newTodos = filterTodos(listTodos, 'ACTIVE');
     this.setState({ listTodos: filterTodos(listTodos, 'ACTIVE') });
+    localStorage.setItem('TODOS', JSON.stringify([...newTodos]));
   };
 
   removeTodo = (id = '') => {
     const { listTodos } = this.state;
+    const newTodos = filterTodos(listTodos, 'REMOVE', id);
     this.setState({ listTodos: filterTodos(listTodos, 'REMOVE', id) });
+    localStorage.setItem('TODOS', JSON.stringify([...newTodos]));
   };
 
   render() {
